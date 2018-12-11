@@ -1,6 +1,6 @@
 <template>
 	
-		<div class="playlist">
+		<div class="playlist" ref="playList">
 			<div class="top-info" ref="topInfo">
 				<div class="info-wrap">
 					<div class="playlist-info">
@@ -20,7 +20,7 @@
 				</div>
 				<img :src="list.logo" class="bg-img">
 			</div>
-			<scroll class="bottom-list" :data="songList" ref="bottomList" :listenScroll="listenScroll" @scroll="scroll">
+			<scroll class="bottom-list" :data="songList" ref="bottomList" :listenScroll="listenScroll" :probeType="probeType" @scroll="scroll">
 				<div class="song-list-wrapper">
 					<div class="count-box">
 						<div class="lef-count">歌单&nbsp;共{{songList.length}}首</div>
@@ -78,6 +78,7 @@
 		},
 		created(){
 			this.listenScroll=true
+			this.probeType=3
 		},
 		mounted(){
 			setTimeout(()=>{
@@ -112,7 +113,14 @@
 		},
 		watch:{
 			scrollY(nowY){
-				this.$refs.topInfo.style[transform]=`translate3d(0,${nowY}px,0)`
+				console.log(nowY)
+				if(nowY<0&&Math.abs(nowY)<Math.abs(this.maxScrollY)){
+					//this.$refs.bottomList.disable()
+					this.$refs.playList.style[transform]=`translate3d(0,${nowY}px,0)`
+				}else{
+					
+				}
+				
 			}
 		},
 		components:{
@@ -127,8 +135,10 @@
 	.list-fade-enter-active, .list-fade-leave-active
 		transition: opacity 0.3s
 	.playlist
-		
-
+		position:fixed
+		top:0
+		bottom:0
+		width:100%
 		.top-info
 			no-wrap-row2()
 			position:relative
