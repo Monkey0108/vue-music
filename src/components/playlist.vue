@@ -1,27 +1,28 @@
 <template>
 	
-		<div class="playlist">
-			<div class="top-info" ref="topInfo">
-				<div class="info-wrap">
-					<div class="playlist-info">
-						<img :src="list.logo" class="left-img">
-						<div class="right-info">
-							<div class="title">{{list.dissname}}</div>
-							<div class="singer"><img :src="list.headurl" class="singer-img"><span class="singer-name">{{list.nickname}}</span></div>
-							<div class="play-numer">播放量:{{visitnum}}万</div>
+		<scroll class="playlist" ref="playList" :data="songList" :listenScroll="listenScroll" :probeType="probeType" @scroll="scroll">
+			<div class="scroll-wrapper">
+				<div class="top-info" ref="topInfo">
+					<div class="info-wrap">
+						<div class="playlist-info">
+							<img :src="list.logo" class="left-img">
+							<div class="right-info">
+								<div class="title">{{list.dissname}}</div>
+								<div class="singer"><img :src="list.headurl" class="singer-img"><span class="singer-name">{{list.nickname}}</span></div>
+								<div class="play-numer">播放量:{{visitnum}}万</div>
+							</div>
+						</div>
+						<div class="player-wrap" ref="playerWrap">
+							<div class="btn_play">
+								播放全部
+							</div>
+							<div class="player"></div>
 						</div>
 					</div>
-					<div class="player-wrap" ref="playerWrap">
-						<div class="btn_play">
-							播放全部
-						</div>
-						<div class="player"></div>
-					</div>
+					<img :src="list.logo" class="bg-img">
 				</div>
-				<img :src="list.logo" class="bg-img">
-			</div>
-			<scroll class="bottom-list" :data="songList" ref="bottomList" :listenScroll="listenScroll" :probeType="probeType">
-				<div class="song-list-wrapper" @touchstart="touchStart" @touchmove="touchMove" @touchend="touchEnd">
+				<div class="bottom-list" ref="bottomList">
+				<div class="song-list-wrapper">
 					<div class="count-box">
 						<div class="lef-count">歌单&nbsp;共{{songList.length}}首</div>
 						<div class="right-collect"></div>
@@ -32,8 +33,9 @@
 					</div>
 					
 				</div>
-			</scroll>
-		</div>
+			</div>
+			</div>
+		</scroll>
 
 </template>
 
@@ -73,25 +75,17 @@
 		},
 		data() {
 			return {
-				pageY:0,
-				lastY:0
+				scrollY:0
 			};
 		},
 		created(){
 			this.listenScroll=true
-			this.probeType=0
-			this.touch={}
-			
+			this.probeType=2
 		},
 		mounted(){
 			setTimeout(()=>{
-				this.setTop()
-				//最大滚动距离
-				this.TopInfoHeight=this.$refs.topInfo.clientHeight;
-				this.maxScrollY=this.$refs.topInfo.clientHeight-this.$refs.playerWrap.clientHeight
+				//this.setTop()
 				
-				
-				this.$refs.bottomList.disable()
 			},20)
 		},
 		methods:{
@@ -109,43 +103,27 @@
 			setTop(){
 				this.infoHeight=this.$refs.topInfo.clientHeight;
 				this.$refs.bottomList.$el.style.top=`${this.infoHeight}px`;
+				
+				this.maxScrollY=this.$refs.topInfo.clientHeight-this.$refs.playerWrap.clientHeight
+				
+				// this.$refs.bottomList.$el.style.height=`${clientHeight-infoHeight}px`
 				this.$refs.bottomList.refresh()
 			},
-			touchStart(e){
-				let startPoint=e.changedTouches[0];
-				this.touch.startX=startPoint.pageX;
-				this.touch.startY=startPoint.pageY;
-				
-			},
-			touchMove(e){
-				let nowPoint=e.changedTouches[0];
-				let delY=nowPoint.pageY-this.touch.startY;
-				let nowY=delY+this.lastY;
-				this.pageY=delY;
-				
-				if(Math.abs(nowY)>=this.maxScrollY){
-					
-				}else{
-					this.$refs.topInfo.style[transform]=`translate3d(0,${nowY}px,0)`;
-				}
-				
-				
-				
-				this.$refs.bottomList.$el.style[transform]=`translate3d(0,${nowY}px,0)`;
-			},
-			touchEnd(e){
-				this.lastY+=this.pageY;//记录离开
-			},
+			scroll(pos){
+				this.scrollY=pos.y
+			}
 		},
 		watch:{
-			/* pageY(nowY){
-				if(Math.abs(nowY)>=this.maxScrollY){
-					console.log(123)
-					this.$refs.bottomList.enable()
+			scrollY(nowY){
+				console.log(nowY)
+				if(nowY<0&&Math.abs(nowY)<Math.abs(this.maxScrollY)){
+					//this.$refs.bottomList.disable()
+					this.$refs.playList.style[transform]=`translate3d(0,${nowY}px,0)`
 				}else{
-					this.$refs.bottomList.disable()
+					
 				}
-			} */
+				
+			}
 		},
 		components:{
 			Scroll
@@ -234,11 +212,7 @@
 					border-width: 7px 11px;
 					border-style: solid;
 					border-radius: 2px;
-		.bottom-list
-			position:fixed
-			width:100%
-			bottom:0
-			overflow:hidden
+
 		.song-list-wrapper
 			.count-box
 				padding:0 16px
