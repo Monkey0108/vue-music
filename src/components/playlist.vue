@@ -1,6 +1,6 @@
 <template>
 	
-		<div class="playlist" ref="playList">
+		<div class="playlist">
 			<div class="top-info" ref="topInfo">
 				<div class="info-wrap">
 					<div class="playlist-info">
@@ -20,8 +20,8 @@
 				</div>
 				<img :src="list.logo" class="bg-img">
 			</div>
-			<scroll class="bottom-list" :data="songList" ref="bottomList" :listenScroll="listenScroll" :probeType="probeType" @scroll="scroll">
-				<div class="song-list-wrapper">
+			<scroll class="bottom-list" :data="songList" ref="bottomList" :listenScroll="listenScroll" :probeType="probeType">
+				<div class="song-list-wrapper" @touchstart="touchStart" @touchmove="touchMove" @touchend="touchEnd">
 					<div class="count-box">
 						<div class="lef-count">歌单&nbsp;共{{songList.length}}首</div>
 						<div class="right-collect"></div>
@@ -73,17 +73,25 @@
 		},
 		data() {
 			return {
-				scrollY:0
+				pageY:0,
+				lastY:0
 			};
 		},
 		created(){
 			this.listenScroll=true
-			this.probeType=3
+			this.probeType=0
+			this.touch={}
+			
 		},
 		mounted(){
 			setTimeout(()=>{
 				this.setTop()
+				//最大滚动距离
+				this.TopInfoHeight=this.$refs.topInfo.clientHeight;
+				this.maxScrollY=this.$refs.topInfo.clientHeight-this.$refs.playerWrap.clientHeight
 				
+				
+				this.$refs.bottomList.disable()
 			},20)
 		},
 		methods:{
@@ -101,27 +109,43 @@
 			setTop(){
 				this.infoHeight=this.$refs.topInfo.clientHeight;
 				this.$refs.bottomList.$el.style.top=`${this.infoHeight}px`;
-				
-				this.maxScrollY=this.$refs.topInfo.clientHeight-this.$refs.playerWrap.clientHeight
-				
-				// this.$refs.bottomList.$el.style.height=`${clientHeight-infoHeight}px`
 				this.$refs.bottomList.refresh()
 			},
-			scroll(pos){
-				this.scrollY=pos.y
-			}
-		},
-		watch:{
-			scrollY(nowY){
-				console.log(nowY)
-				if(nowY<0&&Math.abs(nowY)<Math.abs(this.maxScrollY)){
-					//this.$refs.bottomList.disable()
-					this.$refs.playList.style[transform]=`translate3d(0,${nowY}px,0)`
-				}else{
+			touchStart(e){
+				let startPoint=e.changedTouches[0];
+				this.touch.startX=startPoint.pageX;
+				this.touch.startY=startPoint.pageY;
+				
+			},
+			touchMove(e){
+				let nowPoint=e.changedTouches[0];
+				let delY=nowPoint.pageY-this.touch.startY;
+				let nowY=delY+this.lastY;
+				this.pageY=delY;
+				
+				if(Math.abs(nowY)>=this.maxScrollY){
 					
+				}else{
+					this.$refs.topInfo.style[transform]=`translate3d(0,${nowY}px,0)`;
 				}
 				
-			}
+				
+				
+				this.$refs.bottomList.$el.style[transform]=`translate3d(0,${nowY}px,0)`;
+			},
+			touchEnd(e){
+				this.lastY+=this.pageY;//记录离开
+			},
+		},
+		watch:{
+			/* pageY(nowY){
+				if(Math.abs(nowY)>=this.maxScrollY){
+					console.log(123)
+					this.$refs.bottomList.enable()
+				}else{
+					this.$refs.bottomList.disable()
+				}
+			} */
 		},
 		components:{
 			Scroll
