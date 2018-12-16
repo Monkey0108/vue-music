@@ -1,27 +1,27 @@
 <template>
 	
-		<scroll class="playlist" ref="playList" :data="songList" :listenScroll="listenScroll" :probeType="probeType" @scroll="scroll">
-			<div class="scroll-wrapper">
-				<div class="top-info" ref="topInfo">
-					<div class="info-wrap">
-						<div class="playlist-info">
-							<img :src="list.logo" class="left-img">
-							<div class="right-info">
-								<div class="title">{{list.dissname}}</div>
-								<div class="singer"><img :src="list.headurl" class="singer-img"><span class="singer-name">{{list.nickname}}</span></div>
-								<div class="play-numer">播放量:{{visitnum}}万</div>
-							</div>
-						</div>
-						<div class="player-wrap" ref="playerWrap">
-							<div class="btn_play">
-								播放全部
-							</div>
-							<div class="player"></div>
+		<div class="playlist" ref="playList">
+
+			<div class="top-info" ref="topInfo">
+				<div class="info-wrap">
+					<div class="playlist-info">
+						<img :src="list.logo" class="left-img">
+						<div class="right-info">
+							<div class="title">{{list.dissname}}</div>
+							<div class="singer"><img :src="list.headurl" class="singer-img"><span class="singer-name">{{list.nickname}}</span></div>
+							<div class="play-numer">播放量:{{visitnum}}万</div>
 						</div>
 					</div>
-					<img :src="list.logo" class="bg-img">
+					<div class="player-wrap" ref="playerWrap">
+						<div class="btn_play">
+							播放全部
+						</div>
+						<div class="player"></div>
+					</div>
 				</div>
-				<div class="bottom-list" ref="bottomList">
+				<img :src="list.logo" class="bg-img">
+			</div>
+			<scroll class="bottom-list" ref="bottomList" :data="songList" :listenScroll="listenScroll" :probeType="probeType" @scroll="scroll">
 				<div class="song-list-wrapper">
 					<div class="count-box">
 						<div class="lef-count">歌单&nbsp;共{{songList.length}}首</div>
@@ -33,9 +33,9 @@
 					</div>
 					
 				</div>
-			</div>
-			</div>
-		</scroll>
+			</scroll>
+
+		</div>
 
 </template>
 
@@ -75,17 +75,19 @@
 		},
 		data() {
 			return {
-				scrollY:0
+				scrollY:0,
+				Top:0,
 			};
 		},
 		created(){
 			this.listenScroll=true
-			this.probeType=2
+			this.probeType=3
 		},
 		mounted(){
 			setTimeout(()=>{
-				//this.setTop()
+				this.maxScrollY=this.$refs.topInfo.clientHeight-this.$refs.playerWrap.clientHeight
 				
+				this.setTop()
 			},20)
 		},
 		methods:{
@@ -101,12 +103,10 @@
 				return singer
 			},
 			setTop(){
-				this.infoHeight=this.$refs.topInfo.clientHeight;
-				this.$refs.bottomList.$el.style.top=`${this.infoHeight}px`;
+				this.Top=this.$refs.topInfo.clientHeight;
 				
-				this.maxScrollY=this.$refs.topInfo.clientHeight-this.$refs.playerWrap.clientHeight
-				
-				// this.$refs.bottomList.$el.style.height=`${clientHeight-infoHeight}px`
+				this.$refs.bottomList.$el.style.top=`${this.Top}px`;
+
 				this.$refs.bottomList.refresh()
 			},
 			scroll(pos){
@@ -115,13 +115,15 @@
 		},
 		watch:{
 			scrollY(nowY){
-				console.log(nowY)
-				if(nowY<0&&Math.abs(nowY)<Math.abs(this.maxScrollY)){
-					//this.$refs.bottomList.disable()
-					this.$refs.playList.style[transform]=`translate3d(0,${nowY}px,0)`
+				let translateY=Math.floor(nowY);
+				console.log(translateY)
+				if(translateY<0){
+					translateY=Math.max(translateY,-this.maxScrollY)
 				}else{
-					
+					translateY=Math.min(translateY,0)
 				}
+				
+				this.$refs.topInfo.style[transform]=`translate3d(0,${translateY}px,0)`;
 				
 			}
 		},
@@ -141,9 +143,15 @@
 		top:0
 		bottom:0
 		width:100%
+		.bottom-list
+			position:fixed
+			bottom:0
+			width:100%
 		.top-info
 			no-wrap-row2()
 			position:relative
+			z-index:100
+			background:#fff
 			.bg-img
 				position:absolute
 				top:0
