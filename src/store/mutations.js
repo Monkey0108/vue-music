@@ -2,22 +2,23 @@ import * as types from './mutation-types'
 
 const mutations = {
   [types.SET_PLAYING_STATE](state, flag) {
-    state.playing = flag;
+    state.playing = flag
   },
   [types.SET_FULL_SCREEN](state, flag) {
-    state.fullScreen = flag;
+    state.fullScreen = flag
   },
   [types.SET_PLAYLIST](state, list) {
-    state.playlist = list;
+    state.playlist = list
   },
   [types.SET_SEQUENCE_LIST](state, list) {
-    state.sequenceList = list;
+    state.sequenceList = list
   },
   [types.SET_PLAY_MODE](state, mode) {
-    state.mode = mode;
+    state.mode = mode
   },
   [types.SET_CURRINT_INDEX](state, index) {
-    state.currentIndex = mode;
+    state.currentIndex = index
   }
-};
-export default mutations;
+}
+
+export default mutations
