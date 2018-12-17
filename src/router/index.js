@@ -3,7 +3,7 @@ import Router from 'vue-router'
 import Recommend from 'pages/recommend'
 import TopList from 'pages/top-list'
 import Search from 'pages/search'
-import RecommendPlaylist from 'pages/recommend-playlist'
+import MusicList from 'pages/music-list'
 
 Vue.use(Router)
 export default new Router({
@@ -18,8 +18,8 @@ export default new Router({
       component:Recommend,
 			children:[
 				{
-					path:'recommend-playlist',
-					component:RecommendPlaylist
+					path:'music-list',
+          component: MusicList
 				}
 			]
     },

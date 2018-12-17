@@ -2,7 +2,7 @@
 	<div class="tab">
 		<ul class="tab_list">
 			<template v-for="item in tab_list">
-				<router-link tag="li" :to="item.path" class="tab_item">{{item.label}}</router-link>
+				<router-link tag="li" :to="item.path" class="tab_item" :key="item.id">{{item.label}}</router-link>
 			</template>
 		</ul>
 	</div>

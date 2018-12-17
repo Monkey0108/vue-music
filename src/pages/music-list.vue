@@ -29,9 +29,11 @@
 					let d=res.data;
 					if(d.code==ERR_OK){
 						this.playlist=d.cdlist[0]
+					
 					}
 				})
-			}
+			},
+			
 		},
 		components:{
 			Playlist

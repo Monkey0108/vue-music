@@ -4,6 +4,7 @@ import 'babel-polyfill'
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import vuex from './store'
 import Mint from 'mint-ui'
 import fastclick from 'fastclick'
 import 'common/stylus/index.styl'
@@ -18,5 +19,6 @@ fastclick.attach(document.body)
 new Vue({
   el: '#app',
   router,
+  vuex,
   render:h=>h(App)
 })

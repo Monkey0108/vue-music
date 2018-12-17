@@ -89,8 +89,7 @@
 				return normal_list
 			},
 			selectItem(currentIndex){
-				
-				this.$router.push({path:'/recommend/recommend-playlist',query:{dissid:this.recommend[currentIndex].dissid}})
+				this.$router.push({path:'/recommend/music-list',query:{dissid:this.recommend[currentIndex].dissid}})
 			}
 		},
 		components:{

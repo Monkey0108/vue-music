@@ -42,7 +42,9 @@
 <script>
 	import Scroll from './base/scroll'
 	import {prefixStyle} from 'common/js/dom'
-	
+
+	import {mapMutations} from 'vuex'
+
 	const transform = prefixStyle('transform')
 	
 	export default {
@@ -80,14 +82,18 @@
 			};
 		},
 		created(){
+
 			this.listenScroll=true
 			this.probeType=3
+
+			
 		},
 		mounted(){
 			setTimeout(()=>{
+				let playlist=this.songList
 				this.maxScrollY=this.$refs.topInfo.clientHeight-this.$refs.playerWrap.clientHeight
-				
 				this.setTop()
+				this.setPLAYLIST(playlist)
 			},20)
 		},
 		methods:{
@@ -111,7 +117,10 @@
 			},
 			scroll(pos){
 				this.scrollY=pos.y
-			}
+			},
+			...mapMutations({
+				setPLAYLIST:'SET_PLAYLIST'
+			})
 		},
 		watch:{
 			scrollY(nowY){
